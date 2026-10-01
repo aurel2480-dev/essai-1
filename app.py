@@ -6,13 +6,13 @@ import streamlit as st
 
 # 1. Configuration de la page
 st.set_page_config(
-    page_title="Météo & Trafic des Capitales",
+    page_title="Météo, Trafic & Heures du Monde",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# 2. Styles CSS personnalisés (Fond blanc, cartes dynamiques, couleurs vives)
+# 2. Styles CSS personnalisés (Fond blanc, cartes dynamiques, couleurs peps)
 st.markdown(
     """
     <style>
@@ -82,17 +82,38 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Liste des capitales, coordonnées et fuseaux horaires IANA
-CAPITALES = {
+# Liste des capitales et métropoles de +1 million d'habitants avec coordonnées et fuseaux IANA
+CAPITALES_ET_VILLES = {
     "Europe": {
         "Paris (France)": {
             "lat": 48.8566,
             "lon": 2.3522,
             "tz": "Europe/Paris",
         },
+        "Marseille (France)": {
+            "lat": 43.2965,
+            "lon": 5.3698,
+            "tz": "Europe/Paris",
+        },
+        "Lyon (France)": {"lat": 45.7640, "lon": 4.8357, "tz": "Europe/Paris"},
         "Berlin (Allemagne)": {
             "lat": 52.5200,
             "lon": 13.4050,
+            "tz": "Europe/Berlin",
+        },
+        "Hambourg (Allemagne)": {
+            "lat": 53.5511,
+            "lon": 9.9937,
+            "tz": "Europe/Berlin",
+        },
+        "Munich (Allemagne)": {
+            "lat": 48.1351,
+            "lon": 11.5820,
+            "tz": "Europe/Berlin",
+        },
+        "Cologne (Allemagne)": {
+            "lat": 50.9375,
+            "lon": 6.9603,
             "tz": "Europe/Berlin",
         },
         "Madrid (Espagne)": {
@@ -100,10 +121,21 @@ CAPITALES = {
             "lon": -3.7038,
             "tz": "Europe/Madrid",
         },
+        "Barcelone (Espagne)": {
+            "lat": 41.3851,
+            "lon": 2.1734,
+            "tz": "Europe/Madrid",
+        },
         "Rome (Italie)": {"lat": 41.9028, "lon": 12.4964, "tz": "Europe/Rome"},
+        "Milan (Italie)": {"lat": 45.4642, "lon": 9.1900, "tz": "Europe/Rome"},
         "Londres (Royaume-Uni)": {
             "lat": 51.5074,
             "lon": -0.1278,
+            "tz": "Europe/London",
+        },
+        "Birmingham (Royaume-Uni)": {
+            "lat": 52.4862,
+            "lon": -1.8904,
             "tz": "Europe/London",
         },
         "Bruxelles (Belgique)": {
@@ -131,22 +163,92 @@ CAPITALES = {
             "lon": 16.3738,
             "tz": "Europe/Vienna",
         },
+        "Istanbul (Turquie)": {
+            "lat": 41.0082,
+            "lon": 28.9784,
+            "tz": "Europe/Istanbul",
+        },
+        "Moscou (Russie)": {
+            "lat": 55.7558,
+            "lon": 37.6173,
+            "tz": "Europe/Moscow",
+        },
+        "Saint-Pétersbourg (Russie)": {
+            "lat": 59.9343,
+            "lon": 30.3351,
+            "tz": "Europe/Moscow",
+        },
     },
     "Amérique": {
-        "Ottawa (Canada)": {
-            "lat": 45.4215,
-            "lon": -75.6972,
-            "tz": "America/Toronto",
+        "New York (États-Unis)": {
+            "lat": 40.7128,
+            "lon": -74.0060,
+            "tz": "America/New_York",
+        },
+        "Los Angeles (États-Unis)": {
+            "lat": 34.0522,
+            "lon": -118.2437,
+            "tz": "America/Los_Angeles",
+        },
+        "Chicago (États-Unis)": {
+            "lat": 41.8781,
+            "lon": -87.6298,
+            "tz": "America/Chicago",
+        },
+        "Houston (États-Unis)": {
+            "lat": 29.7604,
+            "lon": -95.3698,
+            "tz": "America/Chicago",
+        },
+        "Phoenix (États-Unis)": {
+            "lat": 33.4484,
+            "lon": -112.0740,
+            "tz": "America/Phoenix",
         },
         "Washington D.C. (États-Unis)": {
             "lat": 38.9072,
             "lon": -77.0369,
             "tz": "America/New_York",
         },
+        "Toronto (Canada)": {
+            "lat": 43.6532,
+            "lon": -79.3832,
+            "tz": "America/Toronto",
+        },
+        "Montréal (Canada)": {
+            "lat": 45.5017,
+            "lon": -73.5673,
+            "tz": "America/Toronto",
+        },
+        "Ottawa (Canada)": {
+            "lat": 45.4215,
+            "lon": -75.6972,
+            "tz": "America/Toronto",
+        },
         "Mexico (Mexique)": {
             "lat": 19.4326,
             "lon": -99.1332,
             "tz": "America/Mexico_City",
+        },
+        "Guadalajara (Mexique)": {
+            "lat": 20.6597,
+            "lon": -103.3496,
+            "tz": "America/Mexico_City",
+        },
+        "Monterrey (Mexique)": {
+            "lat": 25.6866,
+            "lon": -100.3161,
+            "tz": "America/Monterrey",
+        },
+        "São Paulo (Brésil)": {
+            "lat": -23.5505,
+            "lon": -46.6333,
+            "tz": "America/Sao_Paulo",
+        },
+        "Rio de Janeiro (Brésil)": {
+            "lat": -22.9068,
+            "lon": -43.1729,
+            "tz": "America/Sao_Paulo",
         },
         "Brasília (Brésil)": {
             "lat": -15.7975,
@@ -168,13 +270,42 @@ CAPITALES = {
             "lon": -74.0721,
             "tz": "America/Bogota",
         },
+        "Lima (Pérou)": {"lat": -12.0464, "lon": -77.0428, "tz": "America/Lima"},
+        "Caracas (Venezuela)": {
+            "lat": 10.4806,
+            "lon": -66.9036,
+            "tz": "America/Caracas",
+        },
     },
     "Asie": {
         "Tokyo (Japon)": {"lat": 35.6762, "lon": 139.6503, "tz": "Asia/Tokyo"},
+        "Osaka (Japon)": {"lat": 34.6937, "lon": 135.5023, "tz": "Asia/Tokyo"},
         "Pékin (Chine)": {"lat": 39.9042, "lon": 116.4074, "tz": "Asia/Shanghai"},
-        "New Delhi (Inde)": {
-            "lat": 28.6139,
-            "lon": 77.2090,
+        "Shanghai (Chine)": {
+            "lat": 31.2304,
+            "lon": 121.4737,
+            "tz": "Asia/Shanghai",
+        },
+        "Shenzhen (Chine)": {
+            "lat": 22.5431,
+            "lon": 114.0579,
+            "tz": "Asia/Shanghai",
+        },
+        "Guangzhou (Chine)": {
+            "lat": 23.1291,
+            "lon": 113.2644,
+            "tz": "Asia/Shanghai",
+        },
+        "Hong Kong (Chine)": {
+            "lat": 22.3193,
+            "lon": 114.1694,
+            "tz": "Asia/Hong_Kong",
+        },
+        "Mumbai (Inde)": {"lat": 19.0760, "lon": 72.8777, "tz": "Asia/Kolkata"},
+        "Delhi (Inde)": {"lat": 28.6139, "lon": 77.2090, "tz": "Asia/Kolkata"},
+        "Bangalore (Inde)": {
+            "lat": 12.9716,
+            "lon": 77.5946,
             "tz": "Asia/Kolkata",
         },
         "Séoul (Corée du Sud)": {
@@ -187,16 +318,33 @@ CAPITALES = {
             "lon": 100.5018,
             "tz": "Asia/Bangkok",
         },
-        "Riyad (Arabie Saoudite)": {
-            "lat": 24.7136,
-            "lon": 46.6753,
-            "tz": "Asia/Riyadh",
-        },
         "Jakarta (Indonésie)": {
             "lat": -6.2088,
             "lon": 106.8456,
             "tz": "Asia/Jakarta",
         },
+        "Manille (Philippines)": {
+            "lat": 14.5995,
+            "lon": 120.9842,
+            "tz": "Asia/Manila",
+        },
+        "Hô Chi Minh-Ville (Vietnam)": {
+            "lat": 10.8231,
+            "lon": 106.6297,
+            "tz": "Asia/Ho_Chi_Minh",
+        },
+        "Riyad (Arabie Saoudite)": {
+            "lat": 24.7136,
+            "lon": 46.6753,
+            "tz": "Asia/Riyadh",
+        },
+        "Dubaï (Émirats Arabes Unis)": {
+            "lat": 25.2048,
+            "lon": 55.2708,
+            "tz": "Asia/Dubai",
+        },
+        "Téhéran (Iran)": {"lat": 35.6892, "lon": 51.3890, "tz": "Asia/Tehran"},
+        "Bagdad (Irak)": {"lat": 33.3152, "lon": 44.3661, "tz": "Asia/Baghdad"},
     },
     "Afrique": {
         "Le Caire (Égypte)": {
@@ -204,10 +352,45 @@ CAPITALES = {
             "lon": 31.2357,
             "tz": "Africa/Cairo",
         },
+        "Alexandrie (Égypte)": {
+            "lat": 31.2001,
+            "lon": 29.9187,
+            "tz": "Africa/Cairo",
+        },
+        "Casablanca (Maroc)": {
+            "lat": 33.5731,
+            "lon": -7.5898,
+            "tz": "Africa/Casablanca",
+        },
         "Rabat (Maroc)": {
             "lat": 34.0208,
             "lon": -6.8416,
             "tz": "Africa/Casablanca",
+        },
+        "Alger (Algérie)": {
+            "lat": 36.7538,
+            "lon": 3.0588,
+            "tz": "Africa/Algiers",
+        },
+        "Tunis (Tunisie)": {
+            "lat": 36.8065,
+            "lon": 10.1815,
+            "tz": "Africa/Tunis",
+        },
+        "Lagos (Nigeria)": {
+            "lat": 6.5244,
+            "lon": 3.3792,
+            "tz": "Africa/Lagos",
+        },
+        "Kinshasa (RD Congo)": {
+            "lat": -4.4419,
+            "lon": 15.2663,
+            "tz": "Africa/Kinshasa",
+        },
+        "Johannesburg (Afrique du Sud)": {
+            "lat": -26.2041,
+            "lon": 28.0473,
+            "tz": "Africa/Johannesburg",
         },
         "Pretoria (Afrique du Sud)": {
             "lat": -25.7479,
@@ -224,27 +407,57 @@ CAPITALES = {
             "lon": -17.4677,
             "tz": "Africa/Dakar",
         },
-        "Alger (Algérie)": {
-            "lat": 36.7538,
-            "lon": 3.0588,
-            "tz": "Africa/Algiers",
+        "Abidjan (Côte d'Ivoire)": {
+            "lat": 5.3600,
+            "lon": -4.0083,
+            "tz": "Africa/Abidjan",
+        },
+        "Douala (Cameroun)": {
+            "lat": 4.0511,
+            "lon": 9.7679,
+            "tz": "Africa/Douala",
+        },
+        "Yaoundé (Cameroun)": {
+            "lat": 3.8480,
+            "lon": 11.5021,
+            "tz": "Africa/Douala",
         },
     },
     "Océanie": {
+        "Sydney (Australie)": {
+            "lat": -33.8688,
+            "lon": 151.2093,
+            "tz": "Australia/Sydney",
+        },
+        "Melbourne (Australie)": {
+            "lat": -37.8136,
+            "lon": 144.9631,
+            "tz": "Australia/Melbourne",
+        },
+        "Brisbane (Australie)": {
+            "lat": -27.4705,
+            "lon": 153.0260,
+            "tz": "Australia/Brisbane",
+        },
+        "Perth (Australie)": {
+            "lat": -31.9505,
+            "lon": 115.8605,
+            "tz": "Australia/Perth",
+        },
         "Canberra (Australie)": {
             "lat": -35.2809,
             "lon": 149.1300,
             "tz": "Australia/Sydney",
         },
+        "Auckland (Nouvelle-Zélande)": {
+            "lat": -36.8485,
+            "lon": 174.7633,
+            "tz": "Pacific/Auckland",
+        },
         "Wellington (Nouvelle-Zélande)": {
             "lat": -41.2865,
             "lon": 174.7762,
             "tz": "Pacific/Auckland",
-        },
-        "Suva (Fidji)": {
-            "lat": -18.1248,
-            "lon": 178.4501,
-            "tz": "Pacific/Fiji",
         },
     },
 }
@@ -261,7 +474,7 @@ WEATHER_CODES = {
     55: "Bruine dense 🌧️",
     61: "Pluie faible 🌧️",
     63: "Pluie modérée 🌧️",
-    65: "Pluie forte 🌧️️",
+    65: "Pluie forte 🌧️",
     71: "Neige faible 🌨️",
     73: "Neige modérée 🌨️",
     75: "Neige forte 🌨️",
@@ -314,14 +527,15 @@ def fetch_weather(lat, lon):
   return response.json() if response.status_code == 200 else None
 
 
-# Navigation
+# Navigation latérale
 st.sidebar.title("🌍 Navigation")
-continent = st.sidebar.selectbox("Continent", list(CAPITALES.keys()))
+continent = st.sidebar.selectbox("Continent", list(CAPITALES_ET_VILLES.keys()))
 capitale_nom = st.sidebar.selectbox(
-    "Capitale", list(CAPITALES[continent].keys())
+    "Ville / Capitale (+1M hab.)",
+    list(CAPITALES_ET_VILLES[continent].keys()),
 )
 
-coords = CAPITALES[continent][capitale_nom]
+coords = CAPITALES_ET_VILLES[continent][capitale_nom]
 data = fetch_weather(coords["lat"], coords["lon"])
 
 info_horaire = calculer_decalage_paris(coords["tz"])
@@ -367,12 +581,12 @@ if data:
     lat, lon = coords["lat"], coords["lon"]
 
     with tab_traffic:
-      # Embed Google Maps Interactif avec informations de trafic routier directes
+      # Vue Carte avec couche de trafic
       url_traffic = f"https://maps.google.com/maps?q={lat},{lon}&t=m&z=12&layer=t&ie=UTF8&iwloc=&output=embed"
       st.components.v1.iframe(url_traffic, height=380, scrolling=False)
 
     with tab_sat:
-      # Vue Satellite Haute Définition
+      # Vue Satellite
       url_sat = f"https://maps.google.com/maps?q={lat},{lon}&t=k&z=12&ie=UTF8&iwloc=&output=embed"
       st.components.v1.iframe(url_sat, height=380, scrolling=False)
 
