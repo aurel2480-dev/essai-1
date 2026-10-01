@@ -2,12 +2,87 @@ import pandas as pd
 import requests
 import streamlit as st
 
-# Page configuration
+# 1. Configuration de la page
 st.set_page_config(
-    page_title="Météo des Capitales", page_icon="🌍", layout="wide"
+    page_title="Météo des Capitales",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-# Capitales du monde avec coordonnées géographiques
+# 2. Injection CSS personnalisé (Fond blanc, cartes dynamiques, couleurs peps)
+st.markdown(
+    """
+    <style>
+    /* Fond principal blanc */
+    .stApp {
+        background-color: #FFFFFF !important;
+        color: #1E293B;
+    }
+    
+    /* Barre latérale dynamique */
+    section[data-testid="stSidebar"] {
+        background-color: #F8FAFC !important;
+        border-right: 2px solid #F1F5F9;
+    }
+
+    /* Style des métriques */
+    div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+        border-radius: 16px;
+        padding: 16px;
+        color: white !important;
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-4px);
+    }
+
+    /* Textes des métriques en blanc */
+    div[data-testid="stMetric"] label, 
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        color: #FFFFFF !important;
+    }
+
+    /* Cartes de sections */
+    .custom-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    /* Titres avec dégradé vif */
+    .gradient-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #FF4500 0%, #FF8C00 50%, #4169E1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-weather {
+        display: inline-block;
+        background: #FFF7ED;
+        color: #EA580C;
+        border: 1px solid #FFEDD5;
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
+# Données des capitales
 CAPITALES = {
     "Europe": {
         "Paris (France)": {"lat": 48.8566, "lon": 2.3522},
@@ -54,7 +129,6 @@ CAPITALES = {
     },
 }
 
-# Codes météo Open-Meteo vers descriptions en français
 WEATHER_CODES = {
     0: "Ciel dégagé ☀️",
     1: "Principalement dégagé 🌤️",
@@ -68,7 +142,7 @@ WEATHER_CODES = {
     61: "Pluie faible 🌧️",
     63: "Pluie modérée 🌧️",
     65: "Pluie forte 🌧️",
-    71: "Neige faible 🌨️",
+    71: "Neige faible 🌨️️",
     73: "Neige modérée 🌨️",
     75: "Neige forte 🌨️",
     80: "Averses de pluie 🌦️",
@@ -97,51 +171,61 @@ def fetch_weather(lat, lon):
   return response.json() if response.status_code == 200 else None
 
 
-# Interface
-st.title("🌍 Météo des Capitales du Monde")
-
-# Barre latérale - Filtres
-st.sidebar.header("Navigation")
-continent = st.sidebar.selectbox("Choisir un continent", list(CAPITALES.keys()))
+# Navigation latérale
+st.sidebar.title("🌍 Filtres")
+continent = st.sidebar.selectbox("Continent", list(CAPITALES.keys()))
 capitale_nom = st.sidebar.selectbox(
-    "Choisir une capitale", list(CAPITALES[continent].keys())
+    "Capitale", list(CAPITALES[continent].keys())
 )
 
 coords = CAPITALES[continent][capitale_nom]
 data = fetch_weather(coords["lat"], coords["lon"])
+
+# Header principal
+st.markdown(
+    f'<h1 class="gradient-title">Météo · {capitale_nom}</h1>',
+    unsafe_allow_html=True,
+)
 
 if data:
   current = data["current"]
   w_code = current.get("weather_code", 0)
   w_desc = WEATHER_CODES.get(w_code, "Inconnu")
 
-  st.subheader(f"Météo actuelle à **{capitale_nom}** : {w_desc}")
+  st.markdown(
+      f'<div class="badge-weather">{w_desc}</div>', unsafe_allow_html=True
+  )
 
-  # Indicateurs clés
+  # Métriques stylisées avec fonds dégradés peps
   col1, col2, col3, col4 = st.columns(4)
   col1.metric("Température", f"{current['temperature_2m']} °C")
   col2.metric("Ressenti", f"{current['apparent_temperature']} °C")
   col3.metric("Humidité", f"{current['relative_humidity_2m']} %")
   col4.metric("Vent", f"{current['wind_speed_10m']} km/h")
 
-  st.markdown("---")
+  st.write("")
+  st.write("")
 
-  col_left, col_right = st.columns(2)
+  # Layout en 2 colonnes avec cartes stylisées
+  col_left, col_right = st.columns([1, 1], gap="medium")
 
   with col_left:
-    st.write("### 📍 Localisation")
+    st.markdown("### 📍 Géolocalisation")
     map_data = pd.DataFrame({"lat": [coords["lat"]], "lon": [coords["lon"]]})
     st.map(map_data, zoom=6)
 
   with col_right:
-    st.write("### 📈 Prévisions sur 24 heures (°C)")
+    st.markdown("### 📈 Tendance sur 24 heures")
 
-    # Modification apportée ici pour corriger l'erreur :
+    # Préparation des données du graphique
     hourly_df = pd.DataFrame(data["hourly"])
     hourly_df["Heure"] = pd.to_datetime(hourly_df["time"]).dt.strftime("%H:%M")
     hourly_df = hourly_df.rename(columns={"temperature_2m": "Température (°C)"})
 
-    st.line_chart(hourly_df.set_index("Heure")[["Température (°C)"]])
+    # Graphique Streamlit coloré
+    st.line_chart(
+        hourly_df.set_index("Heure")[["Température (°C)"]], color="#FF4500"
+    )
 
 else:
   st.error("Impossible de récupérer les données météo pour cette ville.")
