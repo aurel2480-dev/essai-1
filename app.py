@@ -6,13 +6,13 @@ import streamlit as st
 
 # 1. Configuration de la page
 st.set_page_config(
-    page_title="Météo, Trafic & Heures du Monde",
+    page_title="Météo, Trafic, Heure & Change",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# 2. Styles CSS personnalisés (Fond blanc, cartes dynamiques, couleurs peps)
+# 2. Styles CSS personnalisés
 st.markdown(
     """
     <style>
@@ -61,8 +61,8 @@ st.markdown(
         font-weight: 700;
         padding: 6px 16px;
         border-radius: 9999px;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
+        font-size: 1rem;
+        margin-bottom: 15px;
     }
 
     .badge-tz {
@@ -73,110 +73,135 @@ st.markdown(
         font-weight: 700;
         padding: 6px 16px;
         border-radius: 9999px;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-        margin-left: 10px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        margin-left: 8px;
+    }
+
+    .badge-currency {
+        display: inline-block;
+        background: #F0FDF4;
+        color: #16A34A;
+        border: 1px solid #DCFCE7;
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        margin-left: 8px;
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# Liste des capitales et métropoles de +1 million d'habitants avec coordonnées et fuseaux IANA
+# Liste des métropoles de +1M hab. avec Coordonnées, Fuseau horaire et Monnaie
 CAPITALES_ET_VILLES = {
     "Europe": {
         "Paris (France)": {
             "lat": 48.8566,
             "lon": 2.3522,
             "tz": "Europe/Paris",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Marseille (France)": {
             "lat": 43.2965,
             "lon": 5.3698,
             "tz": "Europe/Paris",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
-        "Lyon (France)": {"lat": 45.7640, "lon": 4.8357, "tz": "Europe/Paris"},
+        "Lyon (France)": {
+            "lat": 45.7640,
+            "lon": 4.8357,
+            "tz": "Europe/Paris",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
+        },
         "Berlin (Allemagne)": {
             "lat": 52.5200,
             "lon": 13.4050,
             "tz": "Europe/Berlin",
-        },
-        "Hambourg (Allemagne)": {
-            "lat": 53.5511,
-            "lon": 9.9937,
-            "tz": "Europe/Berlin",
-        },
-        "Munich (Allemagne)": {
-            "lat": 48.1351,
-            "lon": 11.5820,
-            "tz": "Europe/Berlin",
-        },
-        "Cologne (Allemagne)": {
-            "lat": 50.9375,
-            "lon": 6.9603,
-            "tz": "Europe/Berlin",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Madrid (Espagne)": {
             "lat": 40.4168,
             "lon": -3.7038,
             "tz": "Europe/Madrid",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Barcelone (Espagne)": {
             "lat": 41.3851,
             "lon": 2.1734,
             "tz": "Europe/Madrid",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
-        "Rome (Italie)": {"lat": 41.9028, "lon": 12.4964, "tz": "Europe/Rome"},
-        "Milan (Italie)": {"lat": 45.4642, "lon": 9.1900, "tz": "Europe/Rome"},
+        "Rome (Italie)": {
+            "lat": 41.9028,
+            "lon": 12.4964,
+            "tz": "Europe/Rome",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
+        },
         "Londres (Royaume-Uni)": {
             "lat": 51.5074,
             "lon": -0.1278,
             "tz": "Europe/London",
-        },
-        "Birmingham (Royaume-Uni)": {
-            "lat": 52.4862,
-            "lon": -1.8904,
-            "tz": "Europe/London",
+            "currency": "GBP",
+            "currency_name": "Livre Sterling (£)",
         },
         "Bruxelles (Belgique)": {
             "lat": 50.8503,
             "lon": 4.3517,
             "tz": "Europe/Brussels",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Lisbonne (Portugal)": {
             "lat": 38.7223,
             "lon": -9.1393,
             "tz": "Europe/Lisbon",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Athènes (Grèce)": {
             "lat": 37.9838,
             "lon": 23.7275,
             "tz": "Europe/Athens",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Varsovie (Pologne)": {
             "lat": 52.2297,
             "lon": 21.0122,
             "tz": "Europe/Warsaw",
+            "currency": "PLN",
+            "currency_name": "Zloty polonais (zł)",
         },
         "Vienne (Autriche)": {
             "lat": 48.2082,
             "lon": 16.3738,
             "tz": "Europe/Vienna",
+            "currency": "EUR",
+            "currency_name": "Euro (€)",
         },
         "Istanbul (Turquie)": {
             "lat": 41.0082,
             "lon": 28.9784,
             "tz": "Europe/Istanbul",
+            "currency": "TRY",
+            "currency_name": "Livre turque (₺)",
         },
         "Moscou (Russie)": {
             "lat": 55.7558,
             "lon": 37.6173,
             "tz": "Europe/Moscow",
-        },
-        "Saint-Pétersbourg (Russie)": {
-            "lat": 59.9343,
-            "lon": 30.3351,
-            "tz": "Europe/Moscow",
+            "currency": "RUB",
+            "currency_name": "Rouble russe (₽)",
         },
     },
     "Amérique": {
@@ -184,243 +209,236 @@ CAPITALES_ET_VILLES = {
             "lat": 40.7128,
             "lon": -74.0060,
             "tz": "America/New_York",
+            "currency": "USD",
+            "currency_name": "Dollar US ($)",
         },
         "Los Angeles (États-Unis)": {
             "lat": 34.0522,
             "lon": -118.2437,
             "tz": "America/Los_Angeles",
+            "currency": "USD",
+            "currency_name": "Dollar US ($)",
         },
         "Chicago (États-Unis)": {
             "lat": 41.8781,
             "lon": -87.6298,
             "tz": "America/Chicago",
-        },
-        "Houston (États-Unis)": {
-            "lat": 29.7604,
-            "lon": -95.3698,
-            "tz": "America/Chicago",
-        },
-        "Phoenix (États-Unis)": {
-            "lat": 33.4484,
-            "lon": -112.0740,
-            "tz": "America/Phoenix",
+            "currency": "USD",
+            "currency_name": "Dollar US ($)",
         },
         "Washington D.C. (États-Unis)": {
             "lat": 38.9072,
             "lon": -77.0369,
             "tz": "America/New_York",
+            "currency": "USD",
+            "currency_name": "Dollar US ($)",
         },
         "Toronto (Canada)": {
             "lat": 43.6532,
             "lon": -79.3832,
             "tz": "America/Toronto",
+            "currency": "CAD",
+            "currency_name": "Dollar canadien ($)",
         },
         "Montréal (Canada)": {
             "lat": 45.5017,
             "lon": -73.5673,
             "tz": "America/Toronto",
-        },
-        "Ottawa (Canada)": {
-            "lat": 45.4215,
-            "lon": -75.6972,
-            "tz": "America/Toronto",
+            "currency": "CAD",
+            "currency_name": "Dollar canadien ($)",
         },
         "Mexico (Mexique)": {
             "lat": 19.4326,
             "lon": -99.1332,
             "tz": "America/Mexico_City",
-        },
-        "Guadalajara (Mexique)": {
-            "lat": 20.6597,
-            "lon": -103.3496,
-            "tz": "America/Mexico_City",
-        },
-        "Monterrey (Mexique)": {
-            "lat": 25.6866,
-            "lon": -100.3161,
-            "tz": "America/Monterrey",
+            "currency": "MXN",
+            "currency_name": "Peso mexicain ($)",
         },
         "São Paulo (Brésil)": {
             "lat": -23.5505,
             "lon": -46.6333,
             "tz": "America/Sao_Paulo",
+            "currency": "BRL",
+            "currency_name": "Real brésilien (R$)",
         },
         "Rio de Janeiro (Brésil)": {
             "lat": -22.9068,
             "lon": -43.1729,
             "tz": "America/Sao_Paulo",
-        },
-        "Brasília (Brésil)": {
-            "lat": -15.7975,
-            "lon": -47.8919,
-            "tz": "America/Sao_Paulo",
+            "currency": "BRL",
+            "currency_name": "Real brésilien (R$)",
         },
         "Buenos Aires (Argentine)": {
             "lat": -34.6037,
             "lon": -58.3816,
             "tz": "America/Argentina/Buenos_Aires",
+            "currency": "ARS",
+            "currency_name": "Peso argentin ($)",
         },
         "Santiago (Chili)": {
             "lat": -33.4489,
             "lon": -70.6693,
             "tz": "America/Santiago",
+            "currency": "CLP",
+            "currency_name": "Peso chilien ($)",
         },
         "Bogota (Colombie)": {
             "lat": 4.7110,
             "lon": -74.0721,
             "tz": "America/Bogota",
-        },
-        "Lima (Pérou)": {"lat": -12.0464, "lon": -77.0428, "tz": "America/Lima"},
-        "Caracas (Venezuela)": {
-            "lat": 10.4806,
-            "lon": -66.9036,
-            "tz": "America/Caracas",
+            "currency": "COP",
+            "currency_name": "Peso colombien ($)",
         },
     },
     "Asie": {
-        "Tokyo (Japon)": {"lat": 35.6762, "lon": 139.6503, "tz": "Asia/Tokyo"},
-        "Osaka (Japon)": {"lat": 34.6937, "lon": 135.5023, "tz": "Asia/Tokyo"},
-        "Pékin (Chine)": {"lat": 39.9042, "lon": 116.4074, "tz": "Asia/Shanghai"},
+        "Tokyo (Japon)": {
+            "lat": 35.6762,
+            "lon": 139.6503,
+            "tz": "Asia/Tokyo",
+            "currency": "JPY",
+            "currency_name": "Yen japonais (¥)",
+        },
+        "Pékin (Chine)": {
+            "lat": 39.9042,
+            "lon": 116.4074,
+            "tz": "Asia/Shanghai",
+            "currency": "CNY",
+            "currency_name": "Yuan chinois (¥)",
+        },
         "Shanghai (Chine)": {
             "lat": 31.2304,
             "lon": 121.4737,
             "tz": "Asia/Shanghai",
-        },
-        "Shenzhen (Chine)": {
-            "lat": 22.5431,
-            "lon": 114.0579,
-            "tz": "Asia/Shanghai",
-        },
-        "Guangzhou (Chine)": {
-            "lat": 23.1291,
-            "lon": 113.2644,
-            "tz": "Asia/Shanghai",
+            "currency": "CNY",
+            "currency_name": "Yuan chinois (¥)",
         },
         "Hong Kong (Chine)": {
             "lat": 22.3193,
             "lon": 114.1694,
             "tz": "Asia/Hong_Kong",
+            "currency": "HKD",
+            "currency_name": "Dollar de Hong Kong ($)",
         },
-        "Mumbai (Inde)": {"lat": 19.0760, "lon": 72.8777, "tz": "Asia/Kolkata"},
-        "Delhi (Inde)": {"lat": 28.6139, "lon": 77.2090, "tz": "Asia/Kolkata"},
-        "Bangalore (Inde)": {
-            "lat": 12.9716,
-            "lon": 77.5946,
+        "Mumbai (Inde)": {
+            "lat": 19.0760,
+            "lon": 72.8777,
             "tz": "Asia/Kolkata",
+            "currency": "INR",
+            "currency_name": "Roupie indienne (₹)",
+        },
+        "Delhi (Inde)": {
+            "lat": 28.6139,
+            "lon": 77.2090,
+            "tz": "Asia/Kolkata",
+            "currency": "INR",
+            "currency_name": "Roupie indienne (₹)",
         },
         "Séoul (Corée du Sud)": {
             "lat": 37.5665,
             "lon": 126.9780,
             "tz": "Asia/Seoul",
+            "currency": "KRW",
+            "currency_name": "Won sud-coréen (₩)",
         },
         "Bangkok (Thaïlande)": {
             "lat": 13.7563,
             "lon": 100.5018,
             "tz": "Asia/Bangkok",
+            "currency": "THB",
+            "currency_name": "Baht thaïlandais (฿)",
         },
         "Jakarta (Indonésie)": {
             "lat": -6.2088,
             "lon": 106.8456,
             "tz": "Asia/Jakarta",
-        },
-        "Manille (Philippines)": {
-            "lat": 14.5995,
-            "lon": 120.9842,
-            "tz": "Asia/Manila",
-        },
-        "Hô Chi Minh-Ville (Vietnam)": {
-            "lat": 10.8231,
-            "lon": 106.6297,
-            "tz": "Asia/Ho_Chi_Minh",
-        },
-        "Riyad (Arabie Saoudite)": {
-            "lat": 24.7136,
-            "lon": 46.6753,
-            "tz": "Asia/Riyadh",
+            "currency": "IDR",
+            "currency_name": "Rupiah indonésienne (Rp)",
         },
         "Dubaï (Émirats Arabes Unis)": {
             "lat": 25.2048,
             "lon": 55.2708,
             "tz": "Asia/Dubai",
+            "currency": "AED",
+            "currency_name": "Dirham des EAU (AED)",
         },
-        "Téhéran (Iran)": {"lat": 35.6892, "lon": 51.3890, "tz": "Asia/Tehran"},
-        "Bagdad (Irak)": {"lat": 33.3152, "lon": 44.3661, "tz": "Asia/Baghdad"},
+        "Riyad (Arabie Saoudite)": {
+            "lat": 24.7136,
+            "lon": 46.6753,
+            "tz": "Asia/Riyadh",
+            "currency": "SAR",
+            "currency_name": "Riyal saoudien (SAR)",
+        },
     },
     "Afrique": {
         "Le Caire (Égypte)": {
             "lat": 30.0444,
             "lon": 31.2357,
             "tz": "Africa/Cairo",
-        },
-        "Alexandrie (Égypte)": {
-            "lat": 31.2001,
-            "lon": 29.9187,
-            "tz": "Africa/Cairo",
+            "currency": "EGP",
+            "currency_name": "Livre égyptienne (E£)",
         },
         "Casablanca (Maroc)": {
             "lat": 33.5731,
             "lon": -7.5898,
             "tz": "Africa/Casablanca",
+            "currency": "MAD",
+            "currency_name": "Dirham marocain (DH)",
         },
         "Rabat (Maroc)": {
             "lat": 34.0208,
             "lon": -6.8416,
             "tz": "Africa/Casablanca",
+            "currency": "MAD",
+            "currency_name": "Dirham marocain (DH)",
         },
         "Alger (Algérie)": {
             "lat": 36.7538,
             "lon": 3.0588,
             "tz": "Africa/Algiers",
+            "currency": "DZD",
+            "currency_name": "Dinar algérien (DA)",
         },
         "Tunis (Tunisie)": {
             "lat": 36.8065,
             "lon": 10.1815,
             "tz": "Africa/Tunis",
+            "currency": "TND",
+            "currency_name": "Dinar tunisien (DT)",
         },
         "Lagos (Nigeria)": {
             "lat": 6.5244,
             "lon": 3.3792,
             "tz": "Africa/Lagos",
-        },
-        "Kinshasa (RD Congo)": {
-            "lat": -4.4419,
-            "lon": 15.2663,
-            "tz": "Africa/Kinshasa",
+            "currency": "NGN",
+            "currency_name": "Naira nigérian (₦)",
         },
         "Johannesburg (Afrique du Sud)": {
             "lat": -26.2041,
             "lon": 28.0473,
             "tz": "Africa/Johannesburg",
-        },
-        "Pretoria (Afrique du Sud)": {
-            "lat": -25.7479,
-            "lon": 28.2293,
-            "tz": "Africa/Johannesburg",
-        },
-        "Nairobi (Kenya)": {
-            "lat": -1.2921,
-            "lon": 36.8219,
-            "tz": "Africa/Nairobi",
+            "currency": "ZAR",
+            "currency_name": "Rand sud-africain (R)",
         },
         "Dakar (Sénégal)": {
             "lat": 14.7167,
             "lon": -17.4677,
             "tz": "Africa/Dakar",
+            "currency": "XOF",
+            "currency_name": "Franc CFA (FCFA)",
         },
         "Abidjan (Côte d'Ivoire)": {
             "lat": 5.3600,
             "lon": -4.0083,
             "tz": "Africa/Abidjan",
+            "currency": "XOF",
+            "currency_name": "Franc CFA (FCFA)",
         },
         "Douala (Cameroun)": {
             "lat": 4.0511,
             "lon": 9.7679,
             "tz": "Africa/Douala",
-        },
-        "Yaoundé (Cameroun)": {
-            "lat": 3.8480,
-            "lon": 11.5021,
-            "tz": "Africa/Douala",
+            "currency": "XAF",
+            "currency_name": "Franc CFA BEAC (FCFA)",
         },
     },
     "Océanie": {
@@ -428,45 +446,38 @@ CAPITALES_ET_VILLES = {
             "lat": -33.8688,
             "lon": 151.2093,
             "tz": "Australia/Sydney",
+            "currency": "AUD",
+            "currency_name": "Dollar australien ($)",
         },
         "Melbourne (Australie)": {
             "lat": -37.8136,
             "lon": 144.9631,
             "tz": "Australia/Melbourne",
-        },
-        "Brisbane (Australie)": {
-            "lat": -27.4705,
-            "lon": 153.0260,
-            "tz": "Australia/Brisbane",
-        },
-        "Perth (Australie)": {
-            "lat": -31.9505,
-            "lon": 115.8605,
-            "tz": "Australia/Perth",
-        },
-        "Canberra (Australie)": {
-            "lat": -35.2809,
-            "lon": 149.1300,
-            "tz": "Australia/Sydney",
+            "currency": "AUD",
+            "currency_name": "Dollar australien ($)",
         },
         "Auckland (Nouvelle-Zélande)": {
             "lat": -36.8485,
             "lon": 174.7633,
             "tz": "Pacific/Auckland",
+            "currency": "NZD",
+            "currency_name": "Dollar néo-zélandais ($)",
         },
         "Wellington (Nouvelle-Zélande)": {
             "lat": -41.2865,
             "lon": 174.7762,
             "tz": "Pacific/Auckland",
+            "currency": "NZD",
+            "currency_name": "Dollar néo-zélandais ($)",
         },
     },
 }
 
 WEATHER_CODES = {
     0: "Ciel dégagé ☀️",
-    1: "Principalement dégagé 🌤️",
+    1: "Principalement dégagé 🌤️️",
     2: "Partiellement nuageux ⛅",
-    3: "Couvert ☁️",
+    3: "Couvert ☁️️",
     45: "Brouillard 🌫️",
     48: "Brouillard givrant 🌫️",
     51: "Bruine légère 🌦️",
@@ -506,6 +517,23 @@ def calculer_decalage_paris(tz_target_str):
   }
 
 
+@st.cache_data(ttl=3600)
+def fetch_exchange_rate(target_currency):
+  """Récupère le taux de change en temps réel de 1 EUR vers la monnaie cible"""
+  if target_currency == "EUR":
+    return 1.0
+
+  url = "https://open.er-api.com/v6/latest/EUR"
+  try:
+    response = requests.get(url)
+    if response.status_code == 200:
+      rates = response.json().get("rates", {})
+      return rates.get(target_currency, None)
+  except Exception:
+    pass
+  return None
+
+
 @st.cache_data(ttl=600)
 def fetch_weather(lat, lon):
   url = "https://api.open-meteo.com/v1/forecast"
@@ -539,6 +567,7 @@ coords = CAPITALES_ET_VILLES[continent][capitale_nom]
 data = fetch_weather(coords["lat"], coords["lon"])
 
 info_horaire = calculer_decalage_paris(coords["tz"])
+taux_change = fetch_exchange_rate(coords["currency"])
 
 st.markdown(
     f'<h1 class="gradient-title">{capitale_nom}</h1>',
@@ -550,11 +579,20 @@ if data:
   w_code = current.get("weather_code", 0)
   w_desc = WEATHER_CODES.get(w_code, "Inconnu")
 
-  # Badges
+  # Formatage du texte de change
+  if coords["currency"] == "EUR":
+    currency_str = "💶 Monnaie : Euro (€)"
+  elif taux_change:
+    currency_str = f"💱 1 EUR = {taux_change:.2f} {coords['currency']} ({coords['currency_name']})"
+  else:
+    currency_str = f"💱 Monnaie : {coords['currency_name']}"
+
+  # Badges (Météo, Heure, Monnaie)
   st.markdown(
       f"""
         <span class="badge-weather">{w_desc}</span>
         <span class="badge-tz">🕒 Heure locale : {info_horaire['heure_locale']} ({info_horaire['decalage_str']})</span>
+        <span class="badge-currency">{currency_str}</span>
     """,
       unsafe_allow_html=True,
   )
@@ -581,12 +619,10 @@ if data:
     lat, lon = coords["lat"], coords["lon"]
 
     with tab_traffic:
-      # Vue Carte avec couche de trafic
       url_traffic = f"https://maps.google.com/maps?q={lat},{lon}&t=m&z=12&layer=t&ie=UTF8&iwloc=&output=embed"
       st.components.v1.iframe(url_traffic, height=380, scrolling=False)
 
     with tab_sat:
-      # Vue Satellite
       url_sat = f"https://maps.google.com/maps?q={lat},{lon}&t=k&z=12&ie=UTF8&iwloc=&output=embed"
       st.components.v1.iframe(url_sat, height=380, scrolling=False)
 
