@@ -1,34 +1,33 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import folium
 import pandas as pd
 import requests
 import streamlit as st
+from streamlit_folium import st_folium
 
 # 1. Configuration de la page
 st.set_page_config(
-    page_title="Météo & Info Capitales",
+    page_title="Météo & Trafic des Capitales",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS Personnalisé (Fond blanc, cartes dynamiques, couleurs peps)
+# 2. CSS Personnalisé
 st.markdown(
     """
     <style>
-    /* Fond principal blanc */
     .stApp {
         background-color: #FFFFFF !important;
         color: #1E293B;
     }
     
-    /* Barre latérale dynamique */
     section[data-testid="stSidebar"] {
         background-color: #F8FAFC !important;
         border-right: 2px solid #F1F5F9;
     }
 
-    /* Style des métriques */
     div[data-testid="stMetric"] {
         background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
         border-radius: 16px;
@@ -42,13 +41,11 @@ st.markdown(
         transform: translateY(-4px);
     }
 
-    /* Textes des métriques en blanc */
     div[data-testid="stMetric"] label, 
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
         color: #FFFFFF !important;
     }
 
-    /* Titres avec dégradé vif */
     .gradient-title {
         font-size: 2.2rem;
         font-weight: 800;
@@ -87,7 +84,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Capitales avec coordonnées et identifiants de fuseaux horaires IANA
 CAPITALES = {
     "Europe": {
         "Paris (France)": {
@@ -268,20 +264,18 @@ WEATHER_CODES = {
     63: "Pluie modérée 🌧️",
     65: "Pluie forte 🌧️",
     71: "Neige faible 🌨️",
-    73: "Neige modérée 🌨️",
+    73: "Neige modérée 🌨️️",
     75: "Neige forte 🌨️",
-    80: "Averses de pluie 🌦️️",
+    80: "Averses de pluie 🌦️",
     95: "Orage 🌩️",
 }
 
 
 def calculer_decalage_paris(tz_target_str):
-  """Calcule l'heure locale et le décalage horaire par rapport à Paris"""
   now_utc = datetime.now(ZoneInfo("UTC"))
   heure_paris = now_utc.astimezone(ZoneInfo("Europe/Paris"))
   heure_cible = now_utc.astimezone(ZoneInfo(tz_target_str))
 
-  # Différence en heures
   diff_seconds = (
       heure_cible.utcoffset() - heure_paris.utcoffset()
   ).total_seconds()
@@ -321,7 +315,6 @@ def fetch_weather(lat, lon):
   return response.json() if response.status_code == 200 else None
 
 
-# Navigation latérale
 st.sidebar.title("🌍 Navigation")
 continent = st.sidebar.selectbox("Continent", list(CAPITALES.keys()))
 capitale_nom = st.sidebar.selectbox(
@@ -331,10 +324,8 @@ capitale_nom = st.sidebar.selectbox(
 coords = CAPITALES[continent][capitale_nom]
 data = fetch_weather(coords["lat"], coords["lon"])
 
-# Calcul du décalage horaire
 info_horaire = calculer_decalage_paris(coords["tz"])
 
-# Header principal
 st.markdown(
     f'<h1 class="gradient-title">{capitale_nom}</h1>',
     unsafe_allow_html=True,
@@ -345,7 +336,6 @@ if data:
   w_code = current.get("weather_code", 0)
   w_desc = WEATHER_CODES.get(w_code, "Inconnu")
 
-  # Badges d'information (Météo + Heure / Décalage horaire)
   st.markdown(
       f"""
         <span class="badge-weather">{w_desc}</span>
@@ -354,7 +344,6 @@ if data:
       unsafe_allow_html=True,
   )
 
-  # Métriques stylisées
   col1, col2, col3, col4 = st.columns(4)
   col1.metric("Température", f"{current['temperature_2m']} °C")
   col2.metric("Ressenti", f"{current['apparent_temperature']} °C")
@@ -364,35 +353,64 @@ if data:
   st.write("")
   st.write("")
 
-  # Dispositions en colonnes
   col_left, col_right = st.columns([1, 1], gap="medium")
 
   with col_left:
-    st.markdown("### 🗺️ Carte, Vue Satellite & Trafic")
+    st.markdown("### 🚦 Cartes & Trafic en Temps Réel")
 
-    tab_sat, tab_traffic = st.tabs(["🛰️ Vue Satellite", "🚦 Trafic & Carte"])
+    tab_traffic, tab_sat = st.tabs(
+        ["🚦 Trafic en Temps Réel", "🛰️ Vue Satellite"]
+    )
 
     lat, lon = coords["lat"], coords["lon"]
 
-    with tab_sat:
-      # Satellite Google Maps
-      url_sat = f"https://maps.google.com/maps?q={lat},{lon}&t=k&z=11&ie=UTF8&iwloc=&output=embed"
-      st.components.v1.iframe(url_sat, height=350, scrolling=False)
-
     with tab_traffic:
-      # Carte routière avec couche de trafic
-      url_traffic = f"https://maps.google.com/maps?q={lat},{lon}&t=m&z=12&ie=UTF8&iwloc=&output=embed"
-      st.components.v1.iframe(url_traffic, height=350, scrolling=False)
+      # Carte interactive Folium avec calque de trafic Google Maps
+      m_traffic = folium.Map(location=[lat, lon], zoom_start=12)
+
+      # Couche de trafic en temps réel
+      folium.TileLayer(
+          tiles="https://mt0.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}",
+          attr="Google Maps Traffic",
+          name="Trafic Temps Réel",
+          overlay=True,
+      ).add_to(m_traffic)
+
+      folium.Marker(
+          [lat, lon],
+          popup=capitale_nom,
+          icon=folium.Icon(color="red", icon="info-sign"),
+      ).add_to(m_traffic)
+
+      st_folium(
+          m_traffic, width="100%", height=380, key=f"map_traffic_{capitale_nom}"
+      )
+
+    with tab_sat:
+      # Carte Satellite Esri haute résolution
+      m_sat = folium.Map(location=[lat, lon], zoom_start=12, tiles=None)
+
+      folium.TileLayer(
+          tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          attr="Esri World Imagery",
+          name="Satellite",
+      ).add_to(m_sat)
+
+      folium.Marker(
+          [lat, lon],
+          popup=capitale_nom,
+          icon=folium.Icon(color="orange", icon="info-sign"),
+      ).add_to(m_sat)
+
+      st_folium(m_sat, width="100%", height=380, key=f"map_sat_{capitale_nom}")
 
   with col_right:
     st.markdown("### 📈 Tendance Météo sur 24h")
 
-    # Traitement des données horaires
     hourly_df = pd.DataFrame(data["hourly"])
     hourly_df["Heure"] = pd.to_datetime(hourly_df["time"]).dt.strftime("%H:%M")
     hourly_df = hourly_df.rename(columns={"temperature_2m": "Température (°C)"})
 
-    # Graphique coloré
     st.line_chart(
         hourly_df.set_index("Heure")[["Température (°C)"]], color="#FF4500"
     )
