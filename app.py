@@ -1,6 +1,8 @@
+import folium
 import pandas as pd
 import requests
 import streamlit as st
+from streamlit_folium import st_folium
 
 # 1. Configuration de la page
 st.set_page_config(
@@ -44,16 +46,6 @@ st.markdown(
     div[data-testid="stMetric"] label, 
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
         color: #FFFFFF !important;
-    }
-
-    /* Cartes de sections */
-    .custom-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
     }
 
     /* Titres avec dégradé vif */
@@ -142,7 +134,7 @@ WEATHER_CODES = {
     61: "Pluie faible 🌧️",
     63: "Pluie modérée 🌧️",
     65: "Pluie forte 🌧️",
-    71: "Neige faible 🌨️️",
+    71: "Neige faible 🌨️",
     73: "Neige modérée 🌨️",
     75: "Neige forte 🌨️",
     80: "Averses de pluie 🌦️",
@@ -206,13 +198,38 @@ if data:
   st.write("")
   st.write("")
 
-  # Layout en 2 colonnes avec cartes stylisées
+  # Layout en 2 colonnes
   col_left, col_right = st.columns([1, 1], gap="medium")
 
   with col_left:
-    st.markdown("### 📍 Géolocalisation")
-    map_data = pd.DataFrame({"lat": [coords["lat"]], "lon": [coords["lon"]]})
-    st.map(map_data, zoom=6)
+    st.markdown("### 🛰️ Vue Satellite")
+
+    # Initialisation de la carte Folium
+    m = folium.Map(
+        location=[coords["lat"], coords["lon"]], zoom_start=11, tiles=None
+    )
+
+    # Ajout du fond d'écran Satellite Esri
+    folium.TileLayer(
+        tiles=(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        ),
+        attr="Esri",
+        name="Satellite",
+        overlay=False,
+        control=True,
+    ).add_to(m)
+
+    # Ajout d'un marqueur dynamique sur la ville
+    folium.Marker(
+        [coords["lat"], coords["lon"]],
+        popup=capitale_nom,
+        tooltip=capitale_nom,
+        icon=folium.Icon(color="orange", icon="info-sign"),
+    ).add_to(m)
+
+    # Affichage de la carte dans Streamlit
+    st_folium(m, width="100%", height=350, key="satellite_map")
 
   with col_right:
     st.markdown("### 📈 Tendance sur 24 heures")
