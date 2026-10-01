@@ -1,10 +1,8 @@
 import requests
 import pandas as pd
-import time
 
 API_KEY = "VOTRE_CLE_API"
 
-# Liste des principales capitales mondiales
 capitals = {
     "France": "Paris",
     "Germany": "Berlin",
@@ -36,22 +34,24 @@ def get_weather(city):
 
     try:
         response = requests.get(url, timeout=10)
+        response.raise_for_status()
+
         data = response.json()
 
-        if response.status_code == 200:
-            return {
-                "Ville": city,
-                "Température (°C)": data["main"]["temp"],
-                "Ressenti (°C)": data["main"]["feels_like"],
-                "Humidité (%)": data["main"]["humidity"],
-                "Description": data["weather"][0]["description"],
-                "Vent (km/h)": round(data["wind"]["speed"] * 3.6, 1)
-            }
-        else:
-            return {"Ville": city, "Erreur": data.get("message", "Erreur API")}
+        return {
+            "Ville": city,
+            "Température (°C)": data["main"]["temp"],
+            "Ressenti (°C)": data["main"]["feels_like"],
+            "Humidité (%)": data["main"]["humidity"],
+            "Description": data["weather"][0]["description"],
+            "Vent (km/h)": round(data["wind"]["speed"] * 3.6, 1)
+        }
 
     except Exception as e:
-        return {"Ville": city, "Erreur": str(e)}
+        return {
+            "Ville": city,
+            "Erreur": str(e)
+        }
 
 def display_weather():
     weather_data = []
@@ -66,6 +66,7 @@ def display_weather():
     print(df)
 
     df.to_excel("meteo_mondiale.xlsx", index=False)
+
     print("\nFichier exporté : meteo_mondiale.xlsx")
 
 if __name__ == "__main__":
