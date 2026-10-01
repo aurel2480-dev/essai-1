@@ -1,10 +1,8 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
-import folium
 import pandas as pd
 import requests
 import streamlit as st
-from streamlit_folium import st_folium
 
 # 1. Configuration de la page
 st.set_page_config(
@@ -14,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS Personnalisé
+# 2. Styles CSS personnalisés (Fond blanc, cartes dynamiques, couleurs vives)
 st.markdown(
     """
     <style>
@@ -84,6 +82,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Liste des capitales, coordonnées et fuseaux horaires IANA
 CAPITALES = {
     "Europe": {
         "Paris (France)": {
@@ -262,9 +261,9 @@ WEATHER_CODES = {
     55: "Bruine dense 🌧️",
     61: "Pluie faible 🌧️",
     63: "Pluie modérée 🌧️",
-    65: "Pluie forte 🌧️",
+    65: "Pluie forte 🌧️️",
     71: "Neige faible 🌨️",
-    73: "Neige modérée 🌨️️",
+    73: "Neige modérée 🌨️",
     75: "Neige forte 🌨️",
     80: "Averses de pluie 🌦️",
     95: "Orage 🌩️",
@@ -315,6 +314,7 @@ def fetch_weather(lat, lon):
   return response.json() if response.status_code == 200 else None
 
 
+# Navigation
 st.sidebar.title("🌍 Navigation")
 continent = st.sidebar.selectbox("Continent", list(CAPITALES.keys()))
 capitale_nom = st.sidebar.selectbox(
@@ -336,6 +336,7 @@ if data:
   w_code = current.get("weather_code", 0)
   w_desc = WEATHER_CODES.get(w_code, "Inconnu")
 
+  # Badges
   st.markdown(
       f"""
         <span class="badge-weather">{w_desc}</span>
@@ -344,6 +345,7 @@ if data:
       unsafe_allow_html=True,
   )
 
+  # Métriques
   col1, col2, col3, col4 = st.columns(4)
   col1.metric("Température", f"{current['temperature_2m']} °C")
   col2.metric("Ressenti", f"{current['apparent_temperature']} °C")
@@ -356,53 +358,23 @@ if data:
   col_left, col_right = st.columns([1, 1], gap="medium")
 
   with col_left:
-    st.markdown("### 🚦 Cartes & Trafic en Temps Réel")
+    st.markdown("### 🚦 Trafic & Cartes en Temps Réel")
 
     tab_traffic, tab_sat = st.tabs(
-        ["🚦 Trafic en Temps Réel", "🛰️ Vue Satellite"]
+        ["🚦 Carte & Trafic Direct", "🛰️ Vue Satellite"]
     )
 
     lat, lon = coords["lat"], coords["lon"]
 
     with tab_traffic:
-      # Carte interactive Folium avec calque de trafic Google Maps
-      m_traffic = folium.Map(location=[lat, lon], zoom_start=12)
-
-      # Couche de trafic en temps réel
-      folium.TileLayer(
-          tiles="https://mt0.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}",
-          attr="Google Maps Traffic",
-          name="Trafic Temps Réel",
-          overlay=True,
-      ).add_to(m_traffic)
-
-      folium.Marker(
-          [lat, lon],
-          popup=capitale_nom,
-          icon=folium.Icon(color="red", icon="info-sign"),
-      ).add_to(m_traffic)
-
-      st_folium(
-          m_traffic, width="100%", height=380, key=f"map_traffic_{capitale_nom}"
-      )
+      # Embed Google Maps Interactif avec informations de trafic routier directes
+      url_traffic = f"https://maps.google.com/maps?q={lat},{lon}&t=m&z=12&layer=t&ie=UTF8&iwloc=&output=embed"
+      st.components.v1.iframe(url_traffic, height=380, scrolling=False)
 
     with tab_sat:
-      # Carte Satellite Esri haute résolution
-      m_sat = folium.Map(location=[lat, lon], zoom_start=12, tiles=None)
-
-      folium.TileLayer(
-          tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-          attr="Esri World Imagery",
-          name="Satellite",
-      ).add_to(m_sat)
-
-      folium.Marker(
-          [lat, lon],
-          popup=capitale_nom,
-          icon=folium.Icon(color="orange", icon="info-sign"),
-      ).add_to(m_sat)
-
-      st_folium(m_sat, width="100%", height=380, key=f"map_sat_{capitale_nom}")
+      # Vue Satellite Haute Définition
+      url_sat = f"https://maps.google.com/maps?q={lat},{lon}&t=k&z=12&ie=UTF8&iwloc=&output=embed"
+      st.components.v1.iframe(url_sat, height=380, scrolling=False)
 
   with col_right:
     st.markdown("### 📈 Tendance Météo sur 24h")
