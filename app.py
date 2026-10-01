@@ -1,8 +1,6 @@
-import folium
 import pandas as pd
 import requests
 import streamlit as st
-from streamlit_folium import st_folium
 
 # 1. Configuration de la page
 st.set_page_config(
@@ -127,7 +125,7 @@ WEATHER_CODES = {
     2: "Partiellement nuageux ⛅",
     3: "Couvert ☁️",
     45: "Brouillard 🌫️",
-    48: "Brouillard givrant 🌫️",
+    48: "Brouillard givrant 🌫️️",
     51: "Bruine légère 🌦️",
     53: "Bruine modérée 🌦️",
     55: "Bruine dense 🌧️",
@@ -136,7 +134,7 @@ WEATHER_CODES = {
     65: "Pluie forte 🌧️",
     71: "Neige faible 🌨️",
     73: "Neige modérée 🌨️",
-    75: "Neige forte 🌨️",
+    75: "Neige forte 🌨️️",
     80: "Averses de pluie 🌦️",
     95: "Orage 🌩️",
 }
@@ -188,7 +186,7 @@ if data:
       f'<div class="badge-weather">{w_desc}</div>', unsafe_allow_html=True
   )
 
-  # Métriques stylisées avec fonds dégradés peps
+  # Métriques stylisées
   col1, col2, col3, col4 = st.columns(4)
   col1.metric("Température", f"{current['temperature_2m']} °C")
   col2.metric("Ressenti", f"{current['apparent_temperature']} °C")
@@ -204,42 +202,21 @@ if data:
   with col_left:
     st.markdown("### 🛰️ Vue Satellite")
 
-    # Initialisation de la carte Folium
-    m = folium.Map(
-        location=[coords["lat"], coords["lon"]], zoom_start=11, tiles=None
-    )
+    # Vue satellite Google Maps intégrée via Iframe HTML (aucune dépendance requise)
+    lat, lon = coords["lat"], coords["lon"]
+    google_map_url = f"https://maps.google.com/maps?q={lat},{lon}&t=k&z=11&ie=UTF8&iwloc=&output=embed"
 
-    # Ajout du fond d'écran Satellite Esri
-    folium.TileLayer(
-        tiles=(
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        ),
-        attr="Esri",
-        name="Satellite",
-        overlay=False,
-        control=True,
-    ).add_to(m)
-
-    # Ajout d'un marqueur dynamique sur la ville
-    folium.Marker(
-        [coords["lat"], coords["lon"]],
-        popup=capitale_nom,
-        tooltip=capitale_nom,
-        icon=folium.Icon(color="orange", icon="info-sign"),
-    ).add_to(m)
-
-    # Affichage de la carte dans Streamlit
-    st_folium(m, width="100%", height=350, key="satellite_map")
+    st.components.v1.iframe(google_map_url, height=350, scrolling=False)
 
   with col_right:
     st.markdown("### 📈 Tendance sur 24 heures")
 
-    # Préparation des données du graphique
+    # Traitement des données horaires
     hourly_df = pd.DataFrame(data["hourly"])
     hourly_df["Heure"] = pd.to_datetime(hourly_df["time"]).dt.strftime("%H:%M")
     hourly_df = hourly_df.rename(columns={"temperature_2m": "Température (°C)"})
 
-    # Graphique Streamlit coloré
+    # Graphique coloré
     st.line_chart(
         hourly_df.set_index("Heure")[["Température (°C)"]], color="#FF4500"
     )
