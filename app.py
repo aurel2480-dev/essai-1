@@ -95,7 +95,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Liste des villes + webcam (Windy / EarthCam / Live Embed)
+# Liste des villes avec liens d'embeds Windy universels et stables
 CAPITALES_ET_VILLES = {
     "Europe": {
         "Paris (France)": {
@@ -104,9 +104,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Paris",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": (
-                "https://webcams.windy.com/webcams/stream/1518063080?autoplay=1"
-            ),
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518063080/day",
         },
         "Marseille (France)": {
             "lat": 43.2965,
@@ -114,7 +112,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Paris",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1515228518",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1515228518/day",
         },
         "Lyon (France)": {
             "lat": 45.7640,
@@ -122,7 +120,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Paris",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1539201948",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1539201948/day",
         },
         "Berlin (Allemagne)": {
             "lat": 52.5200,
@@ -130,7 +128,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Berlin",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1352495536",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1352495536/day",
         },
         "Madrid (Espagne)": {
             "lat": 40.4168,
@@ -138,7 +136,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Madrid",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1512403681",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1512403681/day",
         },
         "Barcelone (Espagne)": {
             "lat": 41.3851,
@@ -146,7 +144,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Madrid",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1202888126",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1202888126/day",
         },
         "Rome (Italie)": {
             "lat": 41.9028,
@@ -154,7 +152,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Rome",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1283281577",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1283281577/day",
         },
         "Londres (Royaume-Uni)": {
             "lat": 51.5074,
@@ -162,7 +160,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/London",
             "currency": "GBP",
             "currency_name": "Livre Sterling (£)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1453229605",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1453229605/day",
         },
         "Bruxelles (Belgique)": {
             "lat": 50.8503,
@@ -170,7 +168,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Brussels",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1512140652",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1512140652/day",
         },
         "Lisbonne (Portugal)": {
             "lat": 38.7223,
@@ -178,7 +176,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Lisbon",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518175510",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518175510/day",
         },
         "Athènes (Grèce)": {
             "lat": 37.9838,
@@ -186,7 +184,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Athens",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1359815042",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1359815042/day",
         },
         "Varsovie (Pologne)": {
             "lat": 52.2297,
@@ -194,7 +192,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Warsaw",
             "currency": "PLN",
             "currency_name": "Zloty polonais (zł)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1501258600",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1501258600/day",
         },
         "Vienne (Autriche)": {
             "lat": 48.2082,
@@ -202,7 +200,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Vienna",
             "currency": "EUR",
             "currency_name": "Euro (€)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1360188049",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1360188049/day",
         },
         "Istanbul (Turquie)": {
             "lat": 41.0082,
@@ -210,7 +208,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Europe/Istanbul",
             "currency": "TRY",
             "currency_name": "Livre turque (₺)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1519548002",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1519548002/day",
         },
     },
     "Amérique": {
@@ -220,7 +218,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/New_York",
             "currency": "USD",
             "currency_name": "Dollar US ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1514800109",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1514800109/day",
         },
         "Los Angeles (États-Unis)": {
             "lat": 34.0522,
@@ -228,7 +226,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Los_Angeles",
             "currency": "USD",
             "currency_name": "Dollar US ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1392817812",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1392817812/day",
         },
         "Chicago (États-Unis)": {
             "lat": 41.8781,
@@ -236,7 +234,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Chicago",
             "currency": "USD",
             "currency_name": "Dollar US ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1523306801",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1523306801/day",
         },
         "Toronto (Canada)": {
             "lat": 43.6532,
@@ -244,7 +242,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Toronto",
             "currency": "CAD",
             "currency_name": "Dollar canadien ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1516082001",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1516082001/day",
         },
         "Montréal (Canada)": {
             "lat": 45.5017,
@@ -252,7 +250,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Toronto",
             "currency": "CAD",
             "currency_name": "Dollar canadien ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1516081995",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1516081995/day",
         },
         "Mexico (Mexique)": {
             "lat": 19.4326,
@@ -260,7 +258,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Mexico_City",
             "currency": "MXN",
             "currency_name": "Peso mexicain ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1517551000",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1517551000/day",
         },
         "Rio de Janeiro (Brésil)": {
             "lat": -22.9068,
@@ -268,7 +266,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Sao_Paulo",
             "currency": "BRL",
             "currency_name": "Real brésilien (R$)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518055101",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518055101/day",
         },
         "Buenos Aires (Argentine)": {
             "lat": -34.6037,
@@ -276,7 +274,7 @@ CAPITALES_ET_VILLES = {
             "tz": "America/Argentina/Buenos_Aires",
             "currency": "ARS",
             "currency_name": "Peso argentin ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518055200",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518055200/day",
         },
     },
     "Asie": {
@@ -286,7 +284,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Asia/Tokyo",
             "currency": "JPY",
             "currency_name": "Yen japonais (¥)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1454556002",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1454556002/day",
         },
         "Hong Kong (Chine)": {
             "lat": 22.3193,
@@ -294,7 +292,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Asia/Hong_Kong",
             "currency": "HKD",
             "currency_name": "Dollar de Hong Kong ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518000100",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518000100/day",
         },
         "Bangkok (Thaïlande)": {
             "lat": 13.7563,
@@ -302,7 +300,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Asia/Bangkok",
             "currency": "THB",
             "currency_name": "Baht thaïlandais (฿)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518012010",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518012010/day",
         },
         "Dubaï (Émirats Arabes Unis)": {
             "lat": 25.2048,
@@ -310,7 +308,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Asia/Dubai",
             "currency": "AED",
             "currency_name": "Dirham des EAU (AED)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518099000",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518099000/day",
         },
     },
     "Afrique": {
@@ -320,7 +318,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Africa/Cairo",
             "currency": "EGP",
             "currency_name": "Livre égyptienne (E£)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518100200",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518100200/day",
         },
         "Casablanca (Maroc)": {
             "lat": 33.5731,
@@ -328,7 +326,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Africa/Casablanca",
             "currency": "MAD",
             "currency_name": "Dirham marocain (DH)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518100300",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518100300/day",
         },
         "Johannesburg (Afrique du Sud)": {
             "lat": -26.2041,
@@ -336,7 +334,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Africa/Johannesburg",
             "currency": "ZAR",
             "currency_name": "Rand sud-africain (R)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518100400",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518100400/day",
         },
     },
     "Océanie": {
@@ -346,7 +344,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Australia/Sydney",
             "currency": "AUD",
             "currency_name": "Dollar australien ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1392817800",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1392817800/day",
         },
         "Auckland (Nouvelle-Zélande)": {
             "lat": -36.8485,
@@ -354,7 +352,7 @@ CAPITALES_ET_VILLES = {
             "tz": "Pacific/Auckland",
             "currency": "NZD",
             "currency_name": "Dollar néo-zélandais ($)",
-            "webcam": "https://webcams.windy.com/webcams/stream/1518111000",
+            "webcam": "https://webcams.windy.com/webcams/public/embed/player/1518111000/day",
         },
     },
 }
